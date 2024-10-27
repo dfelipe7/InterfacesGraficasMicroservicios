@@ -74,7 +74,11 @@ try {
             // Redirigir a la ventana de conferencias y pasar el ID del usuario
             ConferenceFrame conferenceFrame = new ConferenceFrame(userId);
             conferenceFrame.setVisible(true);
-        } else {
+        }else if("Autor".equalsIgnoreCase(role)){
+            ArticleFrame articleFrame = new ArticleFrame(userId);
+            articleFrame.setVisible(true);
+        }
+        else {
             JOptionPane.showMessageDialog(this, "No tienes permisos para acceder a las conferencias.", "Error", JOptionPane.ERROR_MESSAGE);
         }
         

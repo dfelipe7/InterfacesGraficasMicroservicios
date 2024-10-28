@@ -1,14 +1,15 @@
 package vistasAutor;
 
+
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
+import javax.swing.table.TableCellRenderer;
 
 public class ArticleFrame extends JFrame {
+
     private JTextField titleField;
     private JTextArea abstractField;
     private JTextField keywordsField;
@@ -36,35 +37,43 @@ public class ArticleFrame extends JFrame {
 
         int row = 0;
 
-        gbc.gridx = 0; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
         inputPanel.add(new JLabel("Título:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         titleField = new JTextField(20);
         inputPanel.add(titleField, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         inputPanel.add(new JLabel("Resumen:"), gbc);
         gbc.gridx = 1;
         abstractField = new JTextArea(5, 20);
         inputPanel.add(new JScrollPane(abstractField), gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         inputPanel.add(new JLabel("Palabras Clave:"), gbc);
         gbc.gridx = 1;
         keywordsField = new JTextField(20);
         inputPanel.add(keywordsField, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         inputPanel.add(new JLabel("Seleccionar Conferencia:"), gbc);
         gbc.gridx = 1;
         conferenceComboBox = new JComboBox<>();
         inputPanel.add(conferenceComboBox, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.fill = GridBagConstraints.NONE;
         JButton fileButton = new JButton("Seleccionar Archivo");
         fileButton.addActionListener(e -> selectFile());
         inputPanel.add(fileButton, gbc);
@@ -76,13 +85,17 @@ public class ArticleFrame extends JFrame {
         inputPanel.add(fileNameField, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row; gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.fill = GridBagConstraints.NONE;
         JButton createButton = new JButton("Crear Artículo");
         createButton.addActionListener(e -> createArticle());
         inputPanel.add(createButton, gbc);
 
         row++;
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
         JButton loadConferenceButton = new JButton("Cargar Conferencias");
         loadConferenceButton.addActionListener(e -> loadConferences());
         inputPanel.add(loadConferenceButton, gbc);
@@ -90,25 +103,10 @@ public class ArticleFrame extends JFrame {
         add(inputPanel, BorderLayout.NORTH);
 
         // Crear tabla para listar artículos
-        String[] columnNames = {"ID", "Título", "Resumen", "Palabras Clave", "Archivo", "Autor ID"};
+        String[] columnNames = {"ID", "Título", "Resumen", "Palabras Clave", "Archivo", "Autor ID", "PDF"};
         tableModel = new DefaultTableModel(columnNames, 0);
         articleTable = new JTable(tableModel);
-        articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        articleTable.getSelectionModel().addListSelectionListener(e -> fillFieldsWithSelectedArticle());
-
-        // Añadir MouseListener para abrir el PDF al hacer doble clic
-        articleTable.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int row = articleTable.getSelectedRow();
-                    if (row != -1) {
-                        String pdfPath = (String) tableModel.getValueAt(row, 4);
-                        openPdf(pdfPath);
-                    }
-                }
-            }
-        });
-
+        
         JScrollPane scrollPane = new JScrollPane(articleTable);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -180,7 +178,6 @@ public class ArticleFrame extends JFrame {
             for (String[] conference : conferences) {
                 String conferenceEntry = conference[0] + " - " + conference[1];
                 conferenceComboBox.addItem(conferenceEntry);
-                // Si deseas detenerte después de cargar una, puedes hacer un break aquí
                 // break; 
             }
         } catch (Exception e) {
@@ -194,10 +191,64 @@ public class ArticleFrame extends JFrame {
             tableModel.setRowCount(0);
 
             for (String[] article : articles) {
-                tableModel.addRow(article);
+                Object[] rowData = {
+                    article[0],
+                    article[1],
+                    article[2],
+                    article[3],
+                    article[4],
+                    article[5],
+                    "Abrir PDF" // Texto del botón en la última columna
+                };
+                tableModel.addRow(rowData);
             }
+
+            // Agregar un botón en la columna de "Abrir PDF"
+            articleTable.getColumnModel().getColumn(6).setCellRenderer((TableCellRenderer) new ButtonRenderer());
+            articleTable.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los artículos: " + e.getMessage());
+        }
+    }
+
+    // Renderer para mostrar el botón en la celda
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+
+        public ButtonRenderer() {
+            setText("Abrir PDF");
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            return this;
+        }
+    }
+
+    // Editor para manejar el clic del botón
+    class ButtonEditor extends DefaultCellEditor {
+
+        private String pdfPath;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            JButton button = new JButton("Abrir PDF");
+            button.addActionListener(e -> openPdf(pdfPath)); // Llama al método de abrir PDF
+            this.editorComponent = button;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            pdfPath = (String) table.getModel().getValueAt(row, 4); // Obtiene la ruta del PDF de la columna 4
+            return (Component) editorComponent;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return pdfPath;
         }
     }
 
@@ -248,7 +299,7 @@ public class ArticleFrame extends JFrame {
 
         try {
             String articleId = (String) tableModel.getValueAt(selectedRow, 0);
-            String result = articleService.deleteArticle(Long.parseLong(articleId),autorId);
+            String result = articleService.deleteArticle(Long.parseLong(articleId), autorId);
             JOptionPane.showMessageDialog(this, result);
             loadArticles();
         } catch (Exception e) {
@@ -277,6 +328,5 @@ public class ArticleFrame extends JFrame {
         fileNameField.setText("");
         selectedFile = null;
     }
-
 
 }

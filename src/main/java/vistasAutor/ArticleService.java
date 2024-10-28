@@ -7,16 +7,28 @@ package vistasAutor;
 
 /**
  *
- * @author Felipe Armero
+ * @author Unicauca
  */
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 
@@ -89,6 +101,7 @@ public class ArticleService {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JsonElement element = jsonArray.get(i);
 
+                // Incluye el ID en la primera columna
                 data[i][0] = element.getAsJsonObject().get("id").getAsString();
                 data[i][1] = element.getAsJsonObject().get("name").getAsString();
             }
@@ -112,18 +125,18 @@ public class ArticleService {
         JsonElement jsonElement = JsonParser.parseString(response.body());
         JsonArray jsonArray = jsonElement.getAsJsonArray();
 
-        // campos que queremos mostrar
+        // Ajusta el tamaño de la matriz de acuerdo a los campos que necesitas mostrar
         String[][] data = new String[jsonArray.size()][6];
 
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonElement element = jsonArray.get(i);
 
             data[i][0] = element.getAsJsonObject().get("id").getAsString();
-            data[i][1] = element.getAsJsonObject().get("name").getAsString(); 
-            data[i][2] = element.getAsJsonObject().get("summary").getAsString(); 
+            data[i][1] = element.getAsJsonObject().get("name").getAsString(); // "name" en lugar de "title"
+            data[i][2] = element.getAsJsonObject().get("summary").getAsString(); // "summary" en lugar de "abstract"
             data[i][3] = element.getAsJsonObject().get("keywords").getAsString();
             data[i][4] = element.getAsJsonObject().get("filePath").getAsString();
-            data[i][5] = element.getAsJsonObject().get("autorId").getAsString(); 
+            data[i][5] = element.getAsJsonObject().get("autorId").getAsString(); // "autorId" en lugar de "authorId"
         }
 
         return data;
@@ -157,7 +170,7 @@ public class ArticleService {
 
     public String deleteArticle(Long articleId, String userId) throws Exception {
         // URL que incluye el userId como parámetro de consulta
-        String urlWithParams = String.format("%s/%d?userId=%d", BASE_URL, articleId, userId);
+        String urlWithParams = String.format("%s/%d?userId=%s", BASE_URL, articleId, userId);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlWithParams))

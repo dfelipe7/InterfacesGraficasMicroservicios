@@ -1,3 +1,5 @@
+package vistasOrganizador;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -5,7 +7,7 @@
 
 /**
  *
- * @author Unicauca
+ * @author Felipe Armero
  */
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -60,7 +62,7 @@ public String createConference(String name, String location, String startDate, S
         JsonElement jsonElement = JsonParser.parseString(response.body());
         JsonArray jsonArray = jsonElement.getAsJsonArray();
 
-        // Aumenta el tamaño a 6 columnas para incluir el ID
+       
         String[][] data = new String[jsonArray.size()][6]; 
 
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -124,5 +126,4 @@ public String deleteConference(Long conferenceId, String userId) throws Exceptio
     
 }
 
-    // Métodos para Update y Delete pueden seguir la misma estructura
 

@@ -1,3 +1,5 @@
+package vistasSesion;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -5,12 +7,13 @@
 
 /**
  *
- * @author Unicauca
+ * @author Felipe Armero
  */
+import vistasSesion.UserService;
+import vistasSesion.LoginFrame;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 public class RegisterFrame extends JFrame {
 
@@ -20,10 +23,10 @@ public class RegisterFrame extends JFrame {
     private JComboBox<String> roleComboBox;
     private JButton registerButton;
     private JButton backButton;
-    private LoginFrame loginFrame; // Para regresar a la ventana de inicio de sesión
+    private LoginFrame loginFrame; 
 
     public RegisterFrame(LoginFrame loginFrame) {
-        this.loginFrame = loginFrame; // Guardar la referencia de la ventana de login
+        this.loginFrame = loginFrame; 
         setTitle("Registro de Usuario");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,10 +83,8 @@ public class RegisterFrame extends JFrame {
         // Llama al método de registro de UserService
         String response = userService.registerUser(name, email, password, role);
 
-        // Muestra el resultado del registro
         JOptionPane.showMessageDialog(this, response);
         
-        // Aquí puedes agregar lógica adicional si el registro es exitoso, como cerrar la ventana de registro o limpiar campos
 
     } catch (Exception e) {
         // Muestra un mensaje de error en caso de que algo falle
@@ -93,7 +94,7 @@ public class RegisterFrame extends JFrame {
 
 
     private void goBackToLogin() {
-        this.dispose(); // Cerrar ventana de registro
-        loginFrame.setVisible(true); // Mostrar ventana de inicio de sesión
+        this.dispose(); 
+        loginFrame.setVisible(true); 
     }
 }

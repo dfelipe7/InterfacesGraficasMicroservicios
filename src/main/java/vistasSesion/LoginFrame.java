@@ -1,3 +1,5 @@
+package vistasSesion;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -5,8 +7,10 @@
 
 /**
  *
- * @author Unicauca
+ * @author Felipe Armero
  */
+import vistasAutor.ArticleFrame;
+import vistasOrganizador.ConferenceFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,7 +29,7 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Crear un JPanel para los campos de entrada
+        // Creamos un JPanel para los campos de entrada
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
 
         // Campos de inicio de sesión
@@ -55,23 +59,21 @@ public class LoginFrame extends JFrame {
     }
 
 private void login() {
-    // Captura de los datos del formulario
+    // Capturamos de los datos del formulario
     String email = emailField.getText();
     String password = new String(passwordField.getPassword());
 
     // Crea una instancia de UserService
     UserService userService = new UserService();
 try {
-        // Llama al método de inicio de sesión de UserService
         String response = userService.login(email, password);
         
         // Verificar el rol del usuario y guardar el ID
-        String role = userService.getUserRole(email); // Método que necesitas implementar para obtener el rol del usuario
-        String userId = userService.getUserId(email); // Método que necesitas implementar para obtener el ID del usuario
+        String role = userService.getUserRole(email); 
+        String userId = userService.getUserId(email); 
         
         if ("Organizador".equalsIgnoreCase(role)) {
-            // Redirigir a la ventana de conferencias
-            // Redirigir a la ventana de conferencias y pasar el ID del usuario
+           
             ConferenceFrame conferenceFrame = new ConferenceFrame(userId);
             conferenceFrame.setVisible(true);
         }else if("Autor".equalsIgnoreCase(role)){
@@ -83,14 +85,12 @@ try {
         }
         
     } catch (Exception e) {
-        // Muestra un mensaje de error en caso de que algo falle
         JOptionPane.showMessageDialog(this, "Error al iniciar sesión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
 
 
     private void openRegisterFrame() {
-        // Abrir ventana de registro
         new RegisterFrame(this).setVisible(true);
         this.setVisible(false); // Ocultar la ventana de login
     }
